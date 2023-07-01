@@ -1,6 +1,9 @@
-import { rootPath } from "@mongez/node";
+import "app/routes.provider";
+import startApplication from "core/application";
+import router from "core/router";
 
-// get the absolute path to the root of the project for the given path
-const root = rootPath("");
+router.get("/", (request: any, response: any) => {
+  response.send({ hello: "world" });
+});
 
-console.log("Project has been started in:", root);
+startApplication();
