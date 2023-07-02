@@ -1,8 +1,13 @@
 import multipart from "@fastify/multipart";
 import router from "core/router";
 import Fastify from "fastify";
+import { connection } from "./database";
 
-export default async function startApplication() {
+function connectToDatabase() {
+  connection.connect();
+}
+
+async function connectToServer() {
   const server = Fastify();
 
   server.register(multipart, {
@@ -20,4 +25,9 @@ export default async function startApplication() {
     server.log.error(err);
     process.exit(1); // stop the process, exit with error
   }
+}
+
+export default async function startApplication() {
+  connectToDatabase();
+  connectToServer();
 }
