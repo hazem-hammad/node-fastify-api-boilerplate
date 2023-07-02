@@ -19,10 +19,6 @@ export class Router {
     return Router.instance;
   }
 
-  private constructor() {
-    console.log("constructor");
-  }
-
   /**
    * Add get request method
    */
@@ -101,7 +97,9 @@ export class Router {
   public scan(server: any) {
     this.routes.forEach(route => {
       const requestMethod = route.method.toLowerCase();
+
       const requestMethodFunction = server[requestMethod].bind(server);
+
       requestMethodFunction(route.path, route.handler);
     });
   }
