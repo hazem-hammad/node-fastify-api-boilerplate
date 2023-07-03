@@ -1,6 +1,15 @@
+import database from "core/database/database";
+import { Request } from "core/http/request";
+
 export default class UserController {
-  public index(request: any) {
-    return request.query;
+  public async index(request: any) {
+    const userCollection = database.collection("users");
+
+    const users = await userCollection.find({}).toArray();
+
+    return {
+      users,
+    };
   }
 
   public show(request: any) {
@@ -9,10 +18,23 @@ export default class UserController {
     };
   }
 
-  public store(request: any) {
+  public async store(request: Request) {
+    // const name = request.input("name");
+    // const email = request.input("email");
+    // const address = request.input("address");
+
     console.log(request.body);
+
+    // const result = await userCollection.insertOne({
+    //   name,
+    //   email,
+    //   published: false,
+    // });
+
     return {
-      done: true,
+      user: {
+        done: true,
+      },
     };
   }
 }

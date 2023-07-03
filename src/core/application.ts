@@ -1,7 +1,7 @@
 import multipart from "@fastify/multipart";
+import connection from "core/database/connection";
 import router from "core/router";
 import Fastify from "fastify";
-import { connection } from "./database";
 
 function connectToDatabase() {
   connection.connect();
@@ -14,6 +14,9 @@ async function connectToServer() {
     attachFieldsToBody: true,
   });
 
+  /**
+   * Register routes
+   */
   router.scan(server);
 
   try {

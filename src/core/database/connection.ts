@@ -37,7 +37,7 @@ export class Connection {
 
       console.log(chalk.green("Connected!"));
     } catch (error) {
-      console.log(error);
+      console.log(chalk.green(error));
     }
   }
 }
