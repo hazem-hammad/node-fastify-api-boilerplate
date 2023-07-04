@@ -1,3 +1,7 @@
+import { only } from "@mongez/reinforcements";
+import Validator from "core/validator";
+import UploadedFile from "./UploadedFile";
+
 export class Request {
   /**
    * Fastify Request instance
@@ -45,7 +49,26 @@ export class Request {
    * Execute handler
    */
   public async execute() {
+    if (this.handler.validation) {
+      const validator = new Validator(this.handler.validation.rules);
+
+      await validator.scan(); // start scanning the rules
+
+      if (validator.fails()) {
+        return this.response.status(422).send({
+          errors: validator.errors(),
+        });
+      }
+    }
+
     return await this.handler(this, this.response);
+  }
+
+  /**
+   * Get only the given keys from the request
+   */
+  public only(keys: string[]) {
+    return only(this.all(), keys);
   }
 
   /**
@@ -85,9 +108,9 @@ export class Request {
       const data = this.request.body[key];
 
       if (Array.isArray(data)) {
-        body[key] = data.map(this.parseBodyValue.bind(this));
+        body[key] = data.map(this.parseInputValue.bind(this));
       } else {
-        body[key] = this.parseBodyValue(data);
+        body[key] = this.parseInputValue(data);
       }
     }
 
@@ -95,18 +118,16 @@ export class Request {
   }
 
   /**
-   * Parse the body value
+   * Parse the given data
    */
-  private parseBodyValue(data: any) {
-    if (data.file) {
-      return {
-        file: data.file,
-        filename: data.filename,
-        mimetype: data.mimetype,
-      };
-    }
+  private parseInputValue(data: any) {
+    // data.value appears only in the multipart form data
+    // if it json, then just return the data
+    if (data.file) return data;
 
-    return data.value || data;
+    if (data.value !== undefined) return data.value;
+
+    return data;
   }
 
   /**
@@ -161,10 +182,12 @@ export class Request {
   }
 
   /**
-   * Get the file value of the given key from the request body, query or params
+   * Get Uploaded file instance
    */
-  public file(key: string) {
-    return this.request.body[key];
+  public file(key: string): UploadedFile | null {
+    const file = this.input(key);
+
+    return file ? new UploadedFile(file) : null;
   }
 }
 

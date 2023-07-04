@@ -1,3 +1,4 @@
+import { rootPath } from "@mongez/node";
 import database from "core/database/database";
 import { Request } from "core/http/request";
 
@@ -19,11 +20,11 @@ export default class UserController {
   }
 
   public async store(request: Request) {
-    // const name = request.input("name");
-    // const email = request.input("email");
-    // const address = request.input("address");
+    const image = request.file("image");
 
-    console.log(request.body);
+    if (image) {
+      image.saveTo(rootPath("storage/uploads"));
+    }
 
     // const result = await userCollection.insertOne({
     //   name,

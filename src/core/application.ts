@@ -1,4 +1,5 @@
 import multipart from "@fastify/multipart";
+import { default as config } from "config/app";
 import connection from "core/database/connection";
 import router from "core/router";
 import Fastify from "fastify";
@@ -21,7 +22,7 @@ async function connectToServer() {
 
   try {
     // 👇🏻 We can use the url of the server
-    const address = await server.listen({ port: 4000 });
+    const address = await server.listen({ port: config.port });
 
     console.log(`Start browsing using ${address}`);
   } catch (err) {
